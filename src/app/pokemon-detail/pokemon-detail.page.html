@@ -1,0 +1,120 @@
+<ion-header [translucent]="false">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        ⬅️ Volver
+      </ion-button>
+    </ion-buttons>
+    <ion-title class="ion-text-capitalize">
+      {{ pokemonDetails ? capitalizeFirstLetter(pokemonDetails.name) : 'Detalles del Pokémon' }}
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div *ngIf="isLoading" class="ion-text-center ion-padding">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Cargando detalles...</p>
+  </div>
+
+  <div
+    *ngIf="error && !isLoading"
+    class="ion-text-center ion-padding"
+    style="color: var(--ion-color-danger)"
+  >
+    <p style="font-size: 2em;">⚠️</p>
+    <p>{{ error }}</p>
+    <ion-button (click)="goBack()" fill="outline">Volver al inicio</ion-button>
+  </div>
+
+  <div *ngIf="pokemonDetails && !isLoading && !error">
+    <ion-card>
+      <ion-img
+        [src]="getSpriteUrl(pokemonDetails)"
+        alt="{{ pokemonDetails.name }}"
+        style="
+          height: 250px;
+          object-fit: contain;
+          margin-top: 15px;
+          margin-bottom: 10px;
+          display: block; margin-left: auto; margin-right: auto;
+        "
+      ></ion-img>
+       <div *ngIf="getSpriteUrl(pokemonDetails) === 'assets/icon/favicon.png'" class="ion-text-center ion-padding">
+        <p>🖼️ Imagen no disponible</p>
+      </div>
+
+      <ion-card-header class="ion-text-center">
+        <ion-card-title class="ion-text-capitalize" style="font-size: 1.8em"
+          >{{ pokemonDetails.name }}</ion-card-title
+        >
+        <ion-card-subtitle>#{{ pokemonDetails.id }}</ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+        <ion-grid>
+          <ion-row>
+            <ion-col size="6">
+              <ion-item lines="none">
+                <ion-label>
+                  <h3>Altura</h3>
+                  <p>{{ pokemonDetails.height / 10 }} m</p>
+                </ion-label>
+              </ion-item>
+            </ion-col>
+            <ion-col size="6">
+              <ion-item lines="none">
+                <ion-label>
+                  <h3>Peso</h3>
+                  <p>{{ pokemonDetails.weight / 10 }} kg</p>
+                </ion-label>
+              </ion-item>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+
+        <div class="ion-margin-top">
+          <h3 class="ion-padding-start" style="font-weight: bold">Tipos:</h3>
+          <ion-list lines="none">
+            <ion-item *ngFor="let typeInfo of pokemonDetails.types">
+              <ion-chip [color]="typeInfo.type.name" outline="true">
+                <ion-label class="ion-text-capitalize"
+                  >{{ typeInfo.type.name }}</ion-label
+                >
+              </ion-chip>
+            </ion-item>
+          </ion-list>
+        </div>
+
+        <div class="ion-margin-top">
+          <h3 class="ion-padding-start" style="font-weight: bold">
+            Habilidades:
+          </h3>
+          <ion-list lines="none">
+            <ion-item *ngFor="let abilityInfo of pokemonDetails.abilities">
+              <ion-label class="ion-text-capitalize"
+                >{{ abilityInfo.ability.name }}</ion-label
+              >
+            </ion-item>
+          </ion-list>
+        </div>
+
+        <div class="ion-margin-top" *ngIf="pokemonDetails.stats">
+          <h3 class="ion-padding-start" style="font-weight: bold">
+            Estadísticas Base:
+          </h3>
+          <ion-list lines="inset">
+            <ion-item *ngFor="let statInfo of pokemonDetails.stats">
+              <ion-label class="ion-text-capitalize"
+                >{{ statInfo.stat.name }}</ion-label
+              >
+              <ion-badge slot="end" color="light"
+                >{{ statInfo.base_stat }}</ion-badge
+              >
+            </ion-item>
+          </ion-list>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

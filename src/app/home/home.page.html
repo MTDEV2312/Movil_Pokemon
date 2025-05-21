@@ -1,0 +1,110 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>
+      Pokédex
+    </ion-title>
+  </ion-toolbar>
+  <ion-toolbar color="primary">
+    <ion-searchbar 
+      [(ngModel)]="searchTerm"
+      (ionInput)="onSearchChange($event)"
+      (ionClear)="clearSearchAndReload()"
+      (keyup.enter)="searchPokemon()"
+      placeholder="Buscar por nombre o ID">
+    </ion-searchbar>
+    <ion-buttons slot="end">
+      <ion-button (click)="searchPokemon()" [disabled]="!searchTerm.trim()">
+        Buscar 🔍
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <!-- Indicador de carga para la búsqueda -->
+  <div *ngIf="loading && searchTerm && !searchedPokemon && !searchError" class="ion-text-center ion-padding">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Buscando {{ searchTerm }}...</p>
+  </div>
+
+  <!-- Mensaje de error en la búsqueda -->
+  <div *ngIf="searchError" class="ion-padding ion-text-center" style="color: var(--ion-color-danger);">
+    <p style="font-size: 2em;">😥</p>
+    <p>{{ searchError }}</p>
+    <ion-button (click)="clearSearchAndReload()" fill="outline">Limpiar búsqueda</ion-button>
+  </div>
+
+  <!-- Resultado de la Búsqueda -->
+  <ion-card *ngIf="searchedPokemon" class="ion-no-margin">
+    <ion-img
+      *ngIf="getImageUrl(searchedPokemon) !== 'assets/icon/favicon.png'"
+      [src]="getImageUrl(searchedPokemon)"
+      alt="{{ searchedPokemon.name }}"
+      style="height: 200px; object-fit: contain; margin-top: 10px; display: block; margin-left: auto; margin-right: auto;"
+    ></ion-img>
+    <div *ngIf="getImageUrl(searchedPokemon) === 'assets/icon/favicon.png'" class="ion-text-center ion-padding">
+        <p>🖼️ Imagen no disponible</p>
+    </div>
+
+    <ion-card-header class="ion-text-center">
+      <ion-card-title class="ion-text-capitalize">
+        {{ searchedPokemon.name || 'Nombre no disponible' }}
+      </ion-card-title>
+      <ion-card-subtitle>
+        #{{ searchedPokemon.id || 'ID no disponible' }}
+      </ion-card-subtitle>
+    </ion-card-header>
+
+    <ion-card-content class="ion-text-center">
+      <div *ngIf="searchedPokemon.height !== undefined && searchedPokemon.height !== null">
+          <p>Altura: {{ searchedPokemon.height / 10 }} m</p>
+      </div>
+      <div *ngIf="searchedPokemon.weight !== undefined && searchedPokemon.weight !== null">
+          <p>Peso: {{ searchedPokemon.weight / 10 }} kg</p>
+      </div>
+      <div *ngIf="(searchedPokemon.height === undefined || searchedPokemon.height === null) && (searchedPokemon.weight === undefined || searchedPokemon.weight === null)" class="ion-padding">
+          <p>Detalles de altura y peso no disponibles.</p>
+      </div>
+
+      <ion-button
+        expand="block"
+        (click)="goToPokemonDetail(searchedPokemon.name)"
+        color="secondary"
+        class="ion-margin-top"
+        [disabled]="!searchedPokemon.name"
+      >
+        ℹ️ Ver Detalles
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Lista de Pokémon (se muestra si no hay búsqueda activa o resultado) -->
+  <div *ngIf="!searchTerm && !searchedPokemon && !searchError">
+    <div *ngIf="loading && !pokemons.length" class="ion-text-center ion-padding">
+        <ion-spinner name="dots"></ion-spinner>
+        <p>Cargando Pokémon...</p>
+    </div>
+    <ion-list *ngIf="pokemons.length > 0">
+      <ion-item *ngFor="let pokemon of pokemons" [button]="true" (click)="goToPokemonDetail(pokemon.name)">
+        <ion-avatar slot="start">
+          <ion-img [src]="getImageUrl(pokemon)" alt="{{pokemon.name}}"></ion-img>
+        </ion-avatar>
+        <ion-label class="ion-text-capitalize">
+          {{ pokemon.name }}
+        </ion-label>
+      </ion-item>
+    </ion-list>
+
+    <ion-infinite-scroll (ionInfinite)="loadPokemons($event)" [disabled]="searchedPokemon || searchError || !pokemons.length">
+      <ion-infinite-scroll-content
+        loadingSpinner="bubbles"
+        loadingText="Cargando más Pokémon...">
+      </ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+  </div>
+
+  <div *ngIf="!pokemons.length && !loading && !searchedPokemon && !searchError && !searchTerm" class="ion-text-center ion-padding">
+    <p>No hay Pokémon para mostrar. Intenta cargar la lista o realizar una búsqueda.</p>
+  </div>
+
+</ion-content>
