@@ -1,5 +1,9 @@
 <ion-header [translucent]="false">
-  <ion-toolbar color="primary">
+
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+    <ion-toolbar color="primary">
     <ion-buttons slot="start">
       <ion-button (click)="goBack()">
         ⬅️ Volver
@@ -9,9 +13,6 @@
       {{ pokemonDetails ? capitalizeFirstLetter(pokemonDetails.name) : 'Detalles del Pokémon' }}
     </ion-title>
   </ion-toolbar>
-</ion-header>
-
-<ion-content [fullscreen]="true" class="ion-padding">
   <div *ngIf="isLoading" class="ion-text-center ion-padding">
     <ion-spinner name="crescent"></ion-spinner>
     <p>Cargando detalles...</p>

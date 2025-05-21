@@ -1,10 +1,11 @@
-<ion-header>
-  <ion-toolbar color="primary">
+
+<ion-content [fullscreen]="true">
+    <ion-toolbar color="primary">
     <ion-title>
       Pokédex
     </ion-title>
   </ion-toolbar>
-  <ion-toolbar color="primary">
+  <ion-toolbar color="primary" class="toolbar-spacing">
     <ion-searchbar 
       [(ngModel)]="searchTerm"
       (ionInput)="onSearchChange($event)"
@@ -18,9 +19,7 @@
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
-</ion-header>
 
-<ion-content [fullscreen]="true">
   <!-- Indicador de carga para la búsqueda -->
   <div *ngIf="loading && searchTerm && !searchedPokemon && !searchError" class="ion-text-center ion-padding">
     <ion-spinner name="crescent"></ion-spinner>

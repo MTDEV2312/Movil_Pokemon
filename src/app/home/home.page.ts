@@ -117,7 +117,13 @@ export class HomePage implements OnInit {
   }
 
   goToPokemonDetail(pokemonName: string) {
-    if (!pokemonName) return; // Evitar navegación si el nombre no está disponible
+    if (!pokemonName) return;
+
+    // Quitar el foco del elemento activo para ayudar con el error aria-hidden
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+
     this.router.navigate(['/pokemon-detail', pokemonName.toLowerCase()]);
   }
 
